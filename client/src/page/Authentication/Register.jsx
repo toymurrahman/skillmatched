@@ -1,13 +1,55 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../image/skiiiilsharedmatch.png";
 import Lottie from "lottie-react";
 import animationData from "../../../public/register.json";
+import { AuthContext } from "../../provider/AuthProvider";
+import toast from "react-hot-toast";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const {
+    user,
+    setUser,
+    createUser,
+    signInWithGoogle,
+    updateUserProfile,
+  } = useContext(AuthContext);
+
+  // google sign in function
+  const handleGoogleSignIn = async() => {
+    try{
+        await signInWithGoogle()
+        toast.success("Successfully signed in with Google")
+        navigate("/")
+    } catch(error){
+        console("Error signing in with Google:", error);
+        toast.error("Failed to sign in with Google")
+      }
+    }
+
+  // register function
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.name.value;
+    const photo = form.photo.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    try {
+      const result = await createUser(email, password);
+      console.log(result);
+      await updateUserProfile(name, photo);
+      setUser({...user, displayName: name, photoURL: photo});
+      navigate("/");
+      toast.success("Successfully registered");
+    } catch (error) {
+      toast.error("Failed to register", error.message);
+    }
+  };
   return (
     <div className="flex justify-center w-full items-center min-h-[calc(100vh-306px)]">
-      <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">
+      <div className="flex  p-4 m-4 w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
             <img className="w-auto h-7 sm:h-8" src={logo} alt="" />
@@ -17,7 +59,7 @@ const Register = () => {
             Get Your Free Account Now.
           </p>
 
-          <div className="flex cursor-pointer items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg   hover:bg-gray-50 ">
+          <div onClick={handleGoogleSignIn} className="flex cursor-pointer items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg   hover:bg-gray-50 ">
             <div className="px-4 py-2">
               <svg className="w-6 h-6" viewBox="0 0 40 40">
                 <path
@@ -53,7 +95,7 @@ const Register = () => {
 
             <span className="w-1/5 border-b dark:border-gray-400 lg:w-1/4"></span>
           </div>
-          <form>
+          <form onSubmit={handleRegister} className="mt-6">
             <div className="mt-4">
               <label
                 className="block mb-2 text-sm font-medium text-gray-600 "
