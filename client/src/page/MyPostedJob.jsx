@@ -1,30 +1,48 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../provider/AuthProvider";
+import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
+import { Link } from "react-router-dom";
 
 const MyPostedJob = () => {
-    const {user} = useContext(AuthContext);
-    const [jobs, setJobs] = useState([]);
+  const { user } = useContext(AuthContext);
+  const [jobs, setJobs] = useState([]);
 
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await axios(
+        `${import.meta.env.VITE_API_URL}/jobs/${user?.email}`
+      );
+      setJobs(data);
+    };
+    getData();
+  }, [user]);
 
-    useEffect( () => {
-        const getData = async () => {
-            const {data} = await fetch(`${import.meta.env.VITE_API_URL}/jobs/${user?.email}`)
-            setJobs(data);
-            /*
-              /jobs/${user?.email}
-            */
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this job?");
+    if (confirm) {
+      try {
+        const { data } = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/jobs/${id}`
+        );
+
+        if (data.deletedCount > 0) {
+          toast.success("Delete successful");
+          setJobs(jobs.filter((job) => job._id !== id));
         }
-        getData()
-    },[user])
-   console.log(jobs);
-   
+      } catch (error) {
+        toast.error("Error deleting job:", error);
+      }
+    }
+  }
+
   return (
     <section className="container px-4 mx-auto pt-12">
       <div className="flex items-center gap-x-3">
         <h2 className="text-lg font-medium text-gray-800 ">My Posted Jobs</h2>
 
         <span className="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full ">
-           Jobs
+          {jobs.length} Jobs
         </span>
       </div>
 
@@ -79,37 +97,36 @@ const MyPostedJob = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 ">
-                  <tr>
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      Build Dynamic Website
-                    </td>
-
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      10/04/2024
-                    </td>
-
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      $100-$200
-                    </td>
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="flex items-center gap-x-2">
-                        <p
-                          className="px-3 py-1 rounded-full text-blue-500 bg-blue-100/60
-                           text-xs"
-                        >
-                          Web Development
-                        </p>
-                      </div>
-                    </td>
-                    <td
-                      title=""
-                      className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap"
-                    >
-                      Lorem ipsum, dolor si adipisicing elit. Ex, provident?..
-                    </td>
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="flex items-center gap-x-6">
-                        <button className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none">
+                  {jobs.map((job) => (
+                    <tr key={job._id}>
+                      <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                        {job.title}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                        {job.deadline}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                        ${job.min_price} - ${job.max_price}
+                      </td>
+                      <td className="px-4 py-4 text-sm whitespace-nowrap">
+                        <div className="flex items-center gap-x-2">
+                          <p className="px-3 py-1 rounded-full text-blue-500 bg-blue-100/60 text-xs">
+                            {job.category}
+                          </p>
+                        </div>
+                      </td>
+                      <td
+                        className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap"
+                        title={job.description}
+                      >
+                        {job.description.length > 35
+                          ? job.description.slice(0, 35) + "..."
+                          : job.description}
+                      </td>
+                      <td className="px-4 py-4 text-sm whitespace-nowrap">
+                        <div className="flex items-center gap-x-6">
+                          {/* delete button */}
+                        <button onClick={() => handleDelete(job._id)} className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -126,7 +143,7 @@ const MyPostedJob = () => {
                           </svg>
                         </button>
 
-                        <button className="text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none">
+                        <Link to={`/update/${job._id}`} className="text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -141,10 +158,11 @@ const MyPostedJob = () => {
                               d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                             />
                           </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                        </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
