@@ -17,7 +17,7 @@ const JobDetails = () => {
     description,
     deadline,
     max_price,
-    buyer_email,
+    buyer,
   } = job || {};
   const [startDate, setStartDate] = useState(new Date());
 
@@ -80,15 +80,15 @@ const JobDetails = () => {
           <p className="mt-6 text-sm font-bold text-gray-600 ">
             Buyer Details:
           </p>
-          <div className="flex items-center gap-5">
-            <div>
-              <p className="mt-2 text-sm  text-gray-600 ">Name: Jhankar Vai.</p>
+          <div className="flex justify-between items-center gap-5">
+            <div className="ml-10">
+              <p className="mt-2 text-sm  text-gray-600 ">Name:   {''}{buyer.name} </p>
               <p className="mt-2 text-sm  text-gray-600 ">
-                Email: {buyer_email}
+                Email:{''} {buyer.email}
               </p>
             </div>
-            <div className="rounded-full object-cover overflow-hidden w-14 h-14">
-              <img src="../image/skiiiilsharedmatch.png" alt="" />
+            <div className="rounded-full mr-10 object-cover overflow-hidden w-14 h-14">
+              <img src={buyer.photo} alt="" />
             </div>
           </div>
           <p className="mt-6 text-lg font-bold text-gray-600 ">
@@ -126,6 +126,7 @@ const JobDetails = () => {
                 type="email"
                 name="email"
                 disabled
+                defaultValue={user?.email}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md   focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>

@@ -9,6 +9,9 @@ export default {
       fontFamily: {
         lato : " 'Lato', sans-serif",
       },
+      colors: {
+        tealCustom: '#23988C', // your custom color name and hex value
+      },
     },
   },
   plugins: [  require('daisyui'),],

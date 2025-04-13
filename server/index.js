@@ -50,9 +50,23 @@ async function run() {
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
+// save data in job
+    app.post("/jobs", async (req, res) => {
+      const jobData = req.body;
+      const result = await jobsCollection.insertOne(jobData);
+      res.send(result);
+    });
 
+    // get posted job by a specific user
+    app.get("/jobs/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { 'buyer.email': email };
+      const cursor = jobsCollection.find(query);
+      const jobs = await cursor.toArray();
+      res.send(jobs);
+    });
 
-// save data 
+// save data in bid
     app.post("/bid", async (req, res) => {
       const bidData = req.body;
       const result = await bidsCollection.insertOne(bidData);
