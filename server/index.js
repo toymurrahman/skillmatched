@@ -52,7 +52,19 @@ async function run() {
     });
 
 
-
+// save data 
+    app.post("/bid", async (req, res) => {
+      const bidData = req.body;
+      const result = await bidsCollection.insertOne(bidData);
+      res.send(result);
+    });
+// get all bids data from database
+    app.get("/bid", async (req, res) => {
+      const query = {};
+      const cursor = bidsCollection.find(query);
+      const bids = await cursor.toArray();
+      res.send(bids);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
