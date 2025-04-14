@@ -47,7 +47,7 @@ async function run() {
       res.send(job);
     });
     // save data in job
-    app.post("/jobs", async (req, res) => {
+    app.post("/job", async (req, res) => {
       const jobData = req.body;
       const result = await jobsCollection.insertOne(jobData);
       res.send(result);
@@ -63,14 +63,14 @@ async function run() {
     });
 
     // delete a job by id
-    app.delete("/jobs/:id", async (req, res) => {
+    app.delete("/job/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await jobsCollection.deleteOne(query);
       res.send(result);
     });
     // update a job by id
-    app.put("/jobs/:id", async (req, res) => {
+    app.put("/job/:id", async (req, res) => {
       const id = req.params.id;
       const jobData = req.body;
       const filter = { _id: new ObjectId(id) };
@@ -109,7 +109,7 @@ async function run() {
     //  get bid req for job owner
     app.get("/bidrequest/:email", async (req, res) => {
       const email = req.params.email;
-      const query = { "buyer.email": email };
+      const query = { buyer_email : email };
       const cursor = bidsCollection.find(query);
       const bids = await cursor.toArray();
       res.send(bids);
@@ -118,33 +118,18 @@ async function run() {
     // Update Bid status
     app.patch("/bid/:id", async (req, res) => {
       const id = req.params.id;
-      const status = req.body;
+      const { status } = req.body;
       const query = { _id: new ObjectId(id) };
       const updateDoc = {
-        $set: status,
+        $set: { status },
       };
       const result = await bidsCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
-    // update bid status by id
-    app.patch("/bidrequest/:id", async (req, res) => {
-      const id = req.params.id;
-      const { status } = req.body;
+ 
 
-      try {
-        const filter = { _id: new ObjectId(id) };
-        const updateDoc = {
-          $set: {
-            status: status,
-          },
-        };
-        const result = await bidsCollection.updateOne(filter, updateDoc);
-        res.send(result);
-      } catch (error) {
-        res.status(500).send({ message: "Failed to update status", error });
-      }
-    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("successfully connected to MongoDB!");
@@ -162,3 +147,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+

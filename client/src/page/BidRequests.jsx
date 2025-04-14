@@ -13,16 +13,17 @@ const BidRequests = () => {
       `${import.meta.env.VITE_API_URL}/bidrequest/${user?.email}`
     );
     setBids(data);
+    console.log(data);
   };
- 
 
+ 
   
   const handleStatus = async (id, currentStatus, newStatus) => {
     if (currentStatus === "Complete") return;
 
     try {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/bidrequest/${id}`,
+        `${import.meta.env.VITE_API_URL}/bid/${id}`,
         { status: newStatus }
       );
 

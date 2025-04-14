@@ -10,7 +10,7 @@ const MyPostedJob = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await axios(
+      const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/jobs/${user?.email}`
       );
       setJobs(data);
@@ -23,7 +23,7 @@ const MyPostedJob = () => {
     if (confirm) {
       try {
         const { data } = await axios.delete(
-          `${import.meta.env.VITE_API_URL}/jobs/${id}`
+          `${import.meta.env.VITE_API_URL}/job/${id}`
         );
 
         if (data.deletedCount > 0) {

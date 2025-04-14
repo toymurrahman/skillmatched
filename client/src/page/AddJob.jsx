@@ -38,7 +38,7 @@ const AddJob = () => {
         };
         // console.table(jobData);
         try {
-            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jobs`, jobData);
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/job`, jobData);
             console.log("Job posted successfully:", data);
             toast.success("Job posted successfully!");
             navigate("/mypostedjob");

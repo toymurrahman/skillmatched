@@ -10,7 +10,8 @@ const UpdateJob = () => {
   const navigate = useNavigate();
   const job = useLoaderData();
   const { _id, title, category, min_price, description, deadline, max_price } =
-    job || {};
+    job ;
+    console.log(job);
   const { user } = useContext(AuthContext);
   const [startDate, setStartDate] = useState(new Date(deadline) || new Date());
 
@@ -45,7 +46,7 @@ const UpdateJob = () => {
         photo: user?.photoURL,
       },
     };
-
+    console.table(jobData);
     try {
       const { data } = await axios.put(
         `${import.meta.env.VITE_API_URL}/job/${_id}`,
@@ -66,7 +67,7 @@ const UpdateJob = () => {
           Update a Job
         </h2>
 
-        <form>
+        <form onSubmit={handleFormSubmit}>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
               <label className="text-gray-700 " htmlFor="job_title">
