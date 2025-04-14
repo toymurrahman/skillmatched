@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../image/skiiiilsharedmatch.png";
 import Lottie from "lottie-react";
 import animationData from "../../../public/register.json";
@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+   const from = location.state || '/';
   const {
     user,
     setUser,
@@ -21,7 +23,7 @@ const Register = () => {
     try{
         await signInWithGoogle()
         toast.success("Successfully signed in with Google")
-        navigate("/")
+        navigate(from, { replace: true });
     } catch(error){
         console("Error signing in with Google:", error);
         toast.error("Failed to sign in with Google")
@@ -41,7 +43,7 @@ const Register = () => {
       console.log(result);
       await updateUserProfile(name, photo);
       setUser({...user, displayName: name, photoURL: photo});
-      navigate("/");
+      navigate(from, { replace: true });
       toast.success("Successfully registered");
     } catch (error) {
       toast.error("Failed to register", error.message);

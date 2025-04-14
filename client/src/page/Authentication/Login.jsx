@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import animationData from "../../../public/signinLottie.json";
 import logo from "../../image/skiiiilsharedmatch.png";
@@ -8,13 +8,21 @@ import toast from "react-hot-toast";
 
 const Login = () => {
     const navigate = useNavigate();
-  const { signIn, signInWithGoogle } = useContext(AuthContext);
+    const location = useLocation();
+     const from = location.state || '/';
+  const { signIn, signInWithGoogle, user, loading } = useContext(AuthContext);
+
+  useEffect(( ) => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 // google sign in function
 const handleGoogleSignIn = async() => {
 try{
     await signInWithGoogle()
     toast.success("Successfully signed in with Google")
-    navigate("/")
+    navigate(from, { replace: true })
 } catch(error){
     console("Error signing in with Google:", error);
     toast.error("Failed to sign in with Google")
@@ -30,13 +38,13 @@ const handleSignIn = async (event) => {
      const result = await signIn(email, password);
      console.log(result);
       toast.success("Successfully signin")
-      navigate("/");
+      navigate(from, { replace: true })
     } catch (error) {
       console("Error signing in:", error);
       toast.error("Failed to sign in", error.message);
     }
   };
- 
+ if (user || loading) return
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)]">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">

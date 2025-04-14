@@ -22,12 +22,6 @@ const AddJob = () => {
         const min_price = parseFloat(form.min_price.value);
         const max_price = parseFloat(form.max_price.value);
         const description = form.description.value;
-    
-        // if (min_price > max_price) {
-        //     toast.error("Minimum price should be less than maximum price.");
-        //     return;
-        // }
-    
         const jobData = {
             title,
             email,

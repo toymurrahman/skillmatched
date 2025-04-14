@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { AuthContext } from "./../provider/AuthProvider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 const JobDetails = () => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const job = useLoaderData();
   const {
     _id,
@@ -23,7 +24,7 @@ const JobDetails = () => {
 
   // form Submission handler
   const handleFormSubmit = async (event) => {
-    if(user?.email === buyer_email) return toast.error("You can't bid on your own job.");
+    if (user?.email === buyer?.email) return toast.error("You can't bid on your own job.");
     event.preventDefault();
     const form = event.target;
     const price = parseFloat(form.price.value);
@@ -35,7 +36,7 @@ const JobDetails = () => {
     const deadline = startDate.toLocaleDateString();
     const comment = form.comment.value;
     const jobId = _id;
-    const buyerEmail = buyer_email;
+    // const buyerEmail = buyer_email;
     const status = "pending";
 
     const bidData = {
@@ -43,16 +44,18 @@ const JobDetails = () => {
       email,
       comment,
       jobId,
-      buyerEmail,
+      buyer_email: buyer?.email,
       status,
       deadline,
       title,
       category,
     };
-    // console.table(bidData);
+    console.table(bidData);
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/bid`, bidData);
       console.log("Bid submitted successfully:", data);
+      toast.success("Bid submitted successfully!");
+      navigate("/mybids");
     } catch (error) {
       console.log("Error submitting form:", error);
     }
